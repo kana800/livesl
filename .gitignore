@@ -127,3 +127,8 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+
+# scraped data information
+scraper/scrapeddata
+scraper/meta.json
