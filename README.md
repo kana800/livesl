@@ -19,7 +19,7 @@
 
 ### Summary
 
-This project is a website that consist of list of latest live events from a curated [list of indie bands](bands.html) in srilanka.  
+This project is a website that consist of list of latest live events from a curated [list of indie bands](bands.md) in srilanka.  
 
 #### How It Work?
 
@@ -35,12 +35,12 @@ Just wanted everything at one place for easier planning for attending live event
 
 ### Development
 
-This project can be broken down into two parts:
+`LiveSL` can be broken down into four main parts:
 
-- [webscraper](scraper/README.md)
-- [site-generator](sitegen/README.md)
-- [website]()
-- [glue](README.md#glue)
+- [webscraper](scraper/README.md): Handles the web scraping
+- [site-generator](sitegen/README.md): Handles template generation
+- [website](): Consist of Documents for the website
+- [glue](README.md#glue): Connects `webscraper`, `site-generator` and `website` together
 
 <TODO add website branch here>
 
@@ -51,4 +51,4 @@ This project can be broken down into two parts:
 
 #### Glue
 
-All the different components are connected together by the `run.bat` script. The following flowchart gives a brief idea on how the **glue stiches different modules together** 
+All the different components are connected together by the `run.bat` script. The following flowchart gives a brief idea on how the **glue stitches different modules together**.

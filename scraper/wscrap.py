@@ -47,4 +47,4 @@ if __name__ == "__main__":
         download_videos=False,
         download_video_thumbnails=False)
     for (key, value) in bandlist.items():
-        downloadLatestPost(bandlist[key])
+        downloadLatestPost(key)

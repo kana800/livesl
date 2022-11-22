@@ -7,4 +7,4 @@ set virtual_loc=scraper\venv\Scripts\activate
 if "%VIRTUAL_ENV%"=="%VIRTUAL_ENV%" (%virtual_loc%) 
 
 ::executing program
-python scraper\main.py
+python scraper\wscrap.py

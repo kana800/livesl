@@ -1,13 +1,34 @@
-## Web-Scraper
+> This folder contains all the information about the web-scraper component
+<h3 align="center">Web-Scraper</h3>
 
+- Summary
+- Bands, BandList
 
 
 ### Summary
-> Web-Scraper heavily relies on the [`instaloader`](https://github.com/instaloader/instaloader). 
+> Web-Scraper component heavily relies on the [`instaloader`](https://github.com/instaloader/instaloader). 
 
-**Instaloader** handles "scraping" all the content from the given `instagram_id`. The script will be only downloading the latest post of the listed *bands*. The scraped content will be downloaded to file directory `scrapeddata`.
+**Instaloader** handles "scraping" all the content from the given `instagram_id`. The script will be only downloading the latest post of the listed *bands*.
 
-Only `Images` and `Descriptions` from the posts are saved to the `scraper/scrapeddata` directory. The **content** from the post `Descriptions` will be **analyzed** to identify whether the given post is about a live event. The file `meta.json` tracks *live events* for each *band* 
+<details>
+<summary>
+The scraped content will be downloaded to file directory scrapeddata
+</summary>
+
+```
+scraper
+|---scrapeddata
+    |---owltreeo
+    |---thesoulsrilanka
+        |---2022-11-20_06-51-17_UTC.jpg // image of the post
+        |---2022-11-20_06-51-17_UTC.json.xz 
+        |---2022-11-20_06-51-17_UTC.txt //description of post
+```
+</details>
+
+---
+
+Only `Images` and `Descriptions` from the posts are saved to the `scraper/scrapeddata` directory. The **content** from the post `Descriptions` will be **analyzed** to identify whether the given post is about a live event. The file `meta.json` tracks *live events* for each *band*. For more information about the analysis of the post, read [parser.md](parser.md). 
 
 #### Band List
 
@@ -38,19 +59,6 @@ The processed information is **stored** in the `scraper/meta.json` file for gene
     }
 }
 ```
-
-#### Post Scoring and Live Events
-<This is work in progress>
-
-> How are we going to determine whether the given post is a *live event* or not ?
-
-This project will use **scoring system** to identify whether given post is a *live event*. 
-
-- Most post with **live music venues** has a several hashtags in its posts. Like 
-`#livemusicvenue #livemusicevent`. Post like this will be given a point
-- Post that mention **prices** will be given a point. These prices should be mentioned will several keywords
-- Post that mention **Date** will be given a point. The given dates should have proper meaning.
-
 
 ---
 
