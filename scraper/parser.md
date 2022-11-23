@@ -1,21 +1,18 @@
 <h3 align="center">Parser</h3>
 
-Other Content Related Parser
+### Table Of Content
+
 - `scrapeddata/*`: scraped data
 - `pytest/parsertest.py`: test cases for the parser
-- `Analysis Of Post`: Notebook containing *analysis* of instagram post made by several bands.
 
 This document explains how exactly the parser works. After a post is scraped we need to identify whether the given post has a "possibility" of being a **post about a live-event**. 
 
-We will be scoring the posts according to several key points and we will be using [`spacy`](https://spacy.io/) for [further analysis](AnalysisOfPost.ipynb) of the post `description`. 
-
-checkout [Analysis Of Post](AnalysisOfPost.ipynb) for indepth detail report about the `description` about `posts`.
-
+We will be scoring the posts according to several key points and we will be using [`spacy`](https://spacy.io/). 
 
 ---
 
 <p style="text-align: center" align="center">
-  <img src="https://github.com/opensrilanka/livesl/tree/main/scraper/.images/parserflow.png" alt="parser algorithm">
+  <img src="https://github.com/opensrilanka/livesl/blob/main/scraper/.images/parserflow.png" alt="parser algorithm">
   <p align="center">
 	Quick overview of the Parser algorithm.
   </p>
@@ -63,8 +60,18 @@ After that we will try to find **named entity** in the `description`. We will be
 
 > **1 point will be given for each *successful* match**
 
-#### Combo's & Specific Details
 
-If `prices` are mentioned in a post there is a higher chance that the post mentioned will be related to a *live-event*.
+#### Identifying Dates
+
+There are several possible methods the post will mention dates:
+
+- `5th december 2022` : `2022 | DATE | Absolute or relative dates or periods`
+- `5thdecember 2022`: `5thdecember2022 | CARDINAL | Numerals that do not fall under another type`
+- `05/12/2022`: `05/12/2022 | CARDINAL | Numerals that do not fall under another type`
+- `12/05/2022`: `12/05/2022 | DATE | Absolute or relative dates or periods`
+- `2022/05/12`: `2022/05/12 | CARDINAL | Numerals that do not fall under another type`
+- `2022/12/05`: `2022/12/05 | CARDINAL | Numerals that do not fall under another type`
+
+Majority of the time `ents` of `Date` get recognized as `DATE, CARDINAL`. To detect dates in the string we will look for the `left-span-entity` and `right-span-entity`. `regex` will be used to detect date versions like `mm/dd/yyyy`. 
 
 ---

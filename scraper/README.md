@@ -1,9 +1,9 @@
 > This folder contains all the information about the web-scraper component
 <h3 align="center">Web-Scraper</h3>
 
-- Summary
-- Bands, BandList
-
+- [Summary](#summary)
+- [Bands, BandList](#band-list)
+- [Parser](parser.md)
 
 ### Summary
 > Web-Scraper component heavily relies on the [`instaloader`](https://github.com/instaloader/instaloader). 

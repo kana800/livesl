@@ -3,7 +3,7 @@
 <p style="text-align: center" align="center">
   <a href="https://github.com/opensrilanka/livesl">
   </a>
-  <img src=".images/logo.png" alt="logo"> 
+  <span style='font-size:100px;'>&#127911;</span>
   <h3 align="center">Live SL</h3>
   <p align="center">
     <br />
@@ -23,9 +23,7 @@ This project is a website that consist of list of latest live events from a cura
 
 #### How It Work?
 
-Github pages is being used for hosting a **static site** with the details of live events. The live events are **scraped** through the **social media** platforms of curated list of bands. The **site** will be updated daily. 
-
-<TODO explain the other parts later>
+Github pages is being used for hosting a **static site** with the details of live events. The live events are **scraped** through the **social media** platforms of curated list of bands. 
 
 #### Why?
 
@@ -33,7 +31,7 @@ Just wanted everything at one place for easier planning for attending live event
 
 ---
 
-### Development
+### Project Structure
 
 `LiveSL` can be broken down into four main parts:
 
