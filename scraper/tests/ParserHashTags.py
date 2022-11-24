@@ -8,8 +8,8 @@ This file contains test cases for:
 """
 import pytest
 import sys
-# setting path
 sys.path.append('../scraper')
+
 
 from scraper.parser import scrapeHashTags,\
      scoreHashTags, IsInHashTags

@@ -60,6 +60,7 @@ After that we will try to find **named entity** in the `description`. We will be
 
 > **1 point will be given for each *successful* match**
 
+---
 
 #### Identifying Dates
 
@@ -73,5 +74,28 @@ There are several possible methods the post will mention dates:
 - `2022/12/05`: `2022/12/05 | CARDINAL | Numerals that do not fall under another type`
 
 Majority of the time `ents` of `Date` get recognized as `DATE, CARDINAL`. To detect dates in the string we will look for the `left-span-entity` and `right-span-entity`. `regex` will be used to detect date versions like `mm/dd/yyyy`. 
+
+#### Identifying Time
+
+
+
+---
+
+#### Identifying Location
+
+Most of the time `locations` are *tagged* in the *post*. `@` will be used to tag a place; The next problem will be to check whether the *tagged* place is *location* or a *person*. 
+
+
+#### Identifying Currency/Prices
+
+We can use *currency* tags to identify *currency*. Tags:
+
+```
+LKR
+USD
+$
+Rs
+```
+
 
 ---

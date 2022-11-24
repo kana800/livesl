@@ -9,12 +9,75 @@ from collections import Counter
 HASHTAGS = ["#liveevent", "#livemusic", 
 "#srilanka" ,"#livemusicvenue",
 "#live", "#event", "#gig"]
-
-NOUNLIST = ["gig", "entry", "music", "concert"]
+NOUNLIST = ["tickets", "gig", "entry", "music", "concert"]
 VERBLIST = ["playing", "supporting", "coming"]
-ENTITYLIST = ["DATE", "ORG", "MONEY", "ORDINAL", "QUANITY", "CARDINAL", "TIME"]
+ENTITYLIST = ["DATE", "ORG", "MONEY", "ORDINAL",\
+     "QUANITY", "CARDINAL", "TIME"]
+MONTHLONG = ['january', 'february', 'march', 'april',\
+    'may', 'june', 'july', 'august', 'september', 'october',\
+    'november', 'december']
+MONTHSHRT = ['jan', 'feb', 'mar', 'apr', 'may', 'june', 'july',\
+    'aug', 'sept', 'oct', 'nov', 'dec']
+WEEKLONG = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday',\
+    'friday', 'saturday']
+WEEKSHRT = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat']
 
+def IsInNouns(wrd):
+    """summary:
+    checks if the nouns
+    is present in the word
+    args:
+        wrd -> tuple -> 
+            ('noun', count)
+    return:
+        bool
+    """
+    wrd = wrd[0]
+    for f in NOUNLIST:
+        if len(wrd.split(f)) > 1:
+            return True
+    return False
+
+def IsInMonth(wrd):
+    """summary:
+    checks if the months
+    is present in the word
+    args:
+        wrd -> word you need to 
+        check against
+    return:
+        bool
+    """
+    for f in MONTHLONG:
+        if len(wrd.split(f)) > 1:
+            return True
+    for f in MONTHSHRT:
+        if len(wrd.split(f)) > 1:
+            return True
+    return False
+
+def IsInDays(wrd):
+    """summary:
+    checks if the months
+    is present in the word
+    args:
+        wrd -> word you need to 
+        check against
+    return:
+        bool
+    """
+    for f in WEEKLONG:
+        if len(wrd.split(f)) > 1:
+            return True
+    for f in WEEKSHRT:
+        if len(wrd.split(f)) > 1:
+            return True
+    return False
+
+# loading spacy language model
 nlp = spacy.load("en_core_web_sm")
+# adding stopwords
+STOPWORDS = nlp.Defaults.stop_words
 
 def IsLiveEvent(description):
     """MainEntry
@@ -30,9 +93,20 @@ def IsLiveEvent(description):
     return:
         True/False
     """
-    doc = nlp(description)
+    TotalScore = 0
+    (htscore, htcnt) = scoreHashTags(description)
+    # removing hashtags
+    doc = nlp(removeHashTags(description))
+    # scoring common words
+    (cwscore, cwwrdcnt) = scoreCommonWords(doc)
+    (nerscore, nerdetect) = scoreNamedEntities(doc)
 
+    print(f"Hash Tag Score: {htscore, htcnt}\n")
+    print(f"Common Word Score: {cwscore, cwwrdcnt}\n")
+    print(f"NER Score: {nerscore, nerdetect}\n")
+    print("---------------------------------\n")
 
+#------------COMMON WORDS-------------------
 def scoreCommonWords(doc):
     """summary: scores the common words
     args:
@@ -64,22 +138,6 @@ def scoreCommonWords(doc):
     print("verb score -> ", advscorenoun)
     print(f"total score -> {nounscore + verbscore} / {wordcnt * 2}")
     return (nounscore + verbscore, wordcnt * 2)
-            
-def IsInNouns(wrd):
-    """summary:
-    checks if the nouns
-    is present in the word
-    args:
-        wrd -> tuple -> 
-            ('noun', count)
-    return:
-        bool
-    """
-    wrd = wrd[0]
-    for f in NOUNLIST:
-        if len(wrd.split(f)) > 1:
-            return True
-    return False
 
 def mostcommonwords(wrdlist, count):
     """
@@ -128,61 +186,161 @@ def getMostCommonWords(doc, count):
     mcw["verb"] = mostcommonwords(verbwords, count)
     return mcw
 
+#-----------NAMED ENTITIES------------------
 def scoreNamedEntities(doc):
     """score named entities
     args:
         doc -> spacy.tokens.doc.Doc
     return:
-        int -> score 
+        (score, totalkeywords) -> (int, int) 
     """
-    return False
-
-def getNamedEntities(doc):
-    """
-        doc -> spacy.tokens.doc.Doc
-    return:
-        int -> score 
-    """
+    # ORDINAL -> 1st, 2nd, 3rd
+    # CARDINAL -> NUMBERALS DONT FALL UNDER OTHER TYPES
+    # DATE -> DATE
+    # holds the detectedDates
+    score = 0
+    detectedDates = []
+    detectedCurrency = []
+    detectedLocations = []
     for span in doc.ents:
         # checking if preferred entities are 
         # present
-        print("sentence ", span.sent)
         if span.label_ in ENTITYLIST:
-            print(span.text,
-            "|" ,span.label_,
-            "|" ,spacy.explain(span.label_))
-            lefts = [t.text for t in span.lefts]
-            rights = [t.text for t in span.rights]
-            print("lefts ", lefts)
-            print("rights ", rights)
+            # checking if the given input is date
+            if ((span.label_ == "ORDINAL") or (span.label_ == "DATE")):
+                ret = IsDate(span)
+                # checking if date is detected or not
+                if ret != None: detectedDates.append(ret)
+            elif (span.label_ == "CARDINAL"):
+                (ret, retstr) = detectCardinalType(span)
+                # checking if date is detected or not
+                if ret == "Cur":
+                     detectedCurrency.append(retstr)
+                elif ret == "Date":
+                    detectedDates(retstr)
 
-    return False
+    # final hard checks for currencies and location
+    if (len(detectedCurrency) == 0):
+        ret = IsCurrencyDesc(doc.text)
+        if ret != None: detectedCurrency.append(ret)
 
-def IsDate(span, lefts, rights):
+    # scoring the dates and currency
+    # one point is given even if there is
+    # multiple detections
+    score += 1 if len(detectedCurrency) >= 1 else 0
+    score += 1 if len(detectedDates) >= 1 else 0
+
+    return (score, len(doc.ents))
+
+def detectCardinalType(span):
+    """summary: detects type of cardinal
+    and try to extract information
+    args:
+        span -> spacy.tokens.doc.Doc
+    return:
+        (type, str)
+        type -> None | "Date" | "Cur"
+        str -> if a text is identified
+    """
+    if (span.label_ == "CARDINAL"):
+        currstr = IsCurrency(span)
+        # Bad Style Coding; Will Change Later
+        if currstr != None: return ("Cur", currstr)
+        datestr = IsDate(span)
+        if datestr != None: return ("Date", datestr)
+        return (None,"")
+    else:
+        return (None,"")
+
+def IsDate(span):
     """summary: return whether the
     given combination of span tokens
-    is a date;
+    is a date or isnt;
     args:
-        span
-        lefts -> list -> left span tokens
-        rights -> list ->right span token
+        span -> spacy.tokens.doc.Doc
     return:
-        [bool, str]
+        if no date is found -> None
+        if date is detected -> str
     """
-    
-    
+    # ORDINAL -> 1st, 2nd, 3rd
+    # CARDINAL -> NUMBERALS DONT FALL UNDER OTHER TYPES
+    # DATE -> DATE
+    if span.label_ == "DATE":
+        foundmonth = [1 for i in str.lower(span.text).split(" ") \
+            if i in MONTHLONG or i in MONTHSHRT].count(1)
+        founddate = [1 for i in str.lower(span.text).split(" ") \
+            if i in WEEKLONG or i in WEEKSHRT].count(1)
+        foundyear = len(re.findall(r"\d{4}",str.lower(span.text)))
+        if ((foundmonth > 0) & (foundyear > 0)):
+            # possibility of having month and year 
+            # possibility of a complete date
+            sanitizetxt = sanitizeString(span.text)
+            return sanitizetxt
+    elif span.label_ == "ORDINAL":
+        # possibility of having a day mentioned
+        foundday = len(re.findall(r"\d", str.lower(span.text)))
+        if (foundday > 0):
+            sanitizetxt = sanitizeString(span.text)
+            return sanitizetxt
+    else:
+        # possibility of having a month or day mentioned
+        # in text
+        foundmonth = IsInMonth(span.text) 
+        foundday = IsInDays(span.text)
+        if ((foundday) | (foundmonth)): return sanitizeString(span.text)
+        return None
 
+def IsCurrency(span):
+    """summary: return whether the
+    given combination of span tokens
+    is a currency;
+    args:
+        span -> spacy.tokens.doc.Doc
+    return:
+        if no currency is found -> None
+        if currency is detected -> str
+    """
+    sanitizedstr = sanitizeString(span.text)
+    foundcurrency = len(
+        re.findall(r"(LKR|Rs|\$)[\s|\d]\d*", sanitizedstr))
+    foundcurrencytag = len(
+        re.findall(r"(LKR|Rs|\$)", sanitizedstr))
+    if foundcurrency > 0:
+        return sanitizedstr
+    if foundcurrencytag > 0:
+        return sanitizedstr
+    return None 
 
-def scoreSpecialCases(description):
+def IsCurrencyDesc(str):
+    """summary: return whether the
+    given string consist of currency;
+    args:
+        str -> string
+    return:
+        if no currency is found -> None
+        if currency is detected -> str
     """
-    """
-    return False
+    foundcurrency = re.findall(r"(LKR|Rs|\$)[\s|\d]\d*", str)
+    foundcurrencytag = re.findall(r"(LKR|Rs|\$)", str)
+    if ((len(foundcurrency) > 0) | len(foundcurrencytag) > 0):
+        return " ".join(foundcurrency)
 
-def getSpecialCases(description):
+def sanitizeString(text):
+    """summary: removes stop
+    words and punctuations from
+    a string
+    args:
+        text -> str
+    return:
+        str
     """
-    """
-    return False
-
+    lst=[]
+    for token in text.split():
+        if token.lower() not in STOPWORDS: 
+            lst.append(token)
+    return " ".join(lst)
+        
+#-------------HASHTAGS----------------
 def scoreHashTags(description):
     """
     summary: Scores the HashTags
