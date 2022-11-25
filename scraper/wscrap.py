@@ -1,8 +1,9 @@
 import instaloader
+import sys
 from datetime import datetime
 from json import load
 from pathlib import Path
-
+from parser import IsLiveEvent
 
 DEFAULT_DATA_PATH = Path('scraper/scrapeddata')
 
@@ -38,13 +39,33 @@ def downloadLatestPost(bandname):
         break
     return result
 
+def grabContentDescription(bandname):
+    """summary: grabs the content
+    description and returns a string
+    args:
+        bandname -> string
+    return:
+        description -> string
+    """
+    readpath = DEFAULT_DATA_PATH/bandname/"latest.txt"
+    with open(readpath, 'r') as f:
+        contents = f.readlines()
+    return " ".join(contents)
+
 
 if __name__ == "__main__":
-    #TODO: add argparse
     bandlist = loadBandList()
     print()
     L = instaloader.Instaloader(
         download_videos=False,
-        download_video_thumbnails=False)
+        download_video_thumbnails=False,
+        filename_pattern="latest")
     for (key, value) in bandlist.items():
-        downloadLatestPost(key)
+        ret = downloadLatestPost(key)
+        # True New Post is Downloaded
+        # Process It and Regenerate Meta.json
+        if (ret):
+            desc = grabContentDescription(key)
+            (liveEvent, MetaDict)= IsLiveEvent(desc)
+            print("live event -> ", liveEvent)
+            print("Meta Dict  -> ", MetaDict)

@@ -21,7 +21,9 @@ MONTHSHRT = ['jan', 'feb', 'mar', 'apr', 'may', 'june', 'july',\
 WEEKLONG = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday',\
     'friday', 'saturday']
 WEEKSHRT = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat']
+METAJSON = {}
 
+#-----Utilities-------------------
 def IsInNouns(wrd):
     """summary:
     checks if the nouns
@@ -93,7 +95,7 @@ def IsLiveEvent(description):
     return:
         True/False
     """
-    TotalScore = 0
+    METAJSON = {}
     (htscore, htcnt) = scoreHashTags(description)
     # removing hashtags
     doc = nlp(removeHashTags(description))
@@ -101,10 +103,25 @@ def IsLiveEvent(description):
     (cwscore, cwwrdcnt) = scoreCommonWords(doc)
     (nerscore, nerdetect) = scoreNamedEntities(doc)
 
-    print(f"Hash Tag Score: {htscore, htcnt}\n")
-    print(f"Common Word Score: {cwscore, cwwrdcnt}\n")
-    print(f"NER Score: {nerscore, nerdetect}\n")
+    print("\n------------------------POST---------------------------\n")
+    print(description)
+    print("\n------------------------POST---------------------------\n")
+
+    # if event is live post
+    if ((nerscore >= 2) & (htscore >= 2) & (cwscore >= 1)):
+        print("-->Detected As Live Event<--\n")
+        state = True
+    else:
+        print("-->Not Detected As Live Event<--\n")
+        state = False
+
+    print("\n")
+    print(f"Hash Tag Score: {htscore, htcnt}")
+    print(f"Common Word Score: {cwscore, cwwrdcnt}")
+    print(f"NER Score: {nerscore, nerdetect}")
+
     print("---------------------------------\n")
+    return (state, METAJSON)
 
 #------------COMMON WORDS-------------------
 def scoreCommonWords(doc):
@@ -133,10 +150,6 @@ def scoreCommonWords(doc):
         nounscore = advscorenoun
     if advscoreverb > verbscore:
         nounscore = advscoreverb
-
-    print("noun score -> ", advscorenoun)
-    print("verb score -> ", advscorenoun)
-    print(f"total score -> {nounscore + verbscore} / {wordcnt * 2}")
     return (nounscore + verbscore, wordcnt * 2)
 
 def mostcommonwords(wrdlist, count):
@@ -229,6 +242,10 @@ def scoreNamedEntities(doc):
     # multiple detections
     score += 1 if len(detectedCurrency) >= 1 else 0
     score += 1 if len(detectedDates) >= 1 else 0
+
+    # populating meta json
+    METAJSON['Dates'] = detectedDates
+    METAJSON['Curre'] = detectedCurrency
 
     return (score, len(doc.ents))
 
@@ -351,7 +368,6 @@ def scoreHashTags(description):
     return:
         score
     """
-    print("---ScoreHashTags---")
     thashtags = scrapeHashTags(description)
     ttotalkeywords = len(thashtags)
     score = 0
@@ -363,8 +379,6 @@ def scoreHashTags(description):
     # check if the adv score is greater
     if advscore.count(1) > score:
         score = advscore.count(1)
-    print(f"total score -> {score}" 
-    f" | total hashtags detected -> {ttotalkeywords}")
     return (score, ttotalkeywords)
 
 def IsInHashTags(wrd):

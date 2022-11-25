@@ -19,8 +19,12 @@ from scraper.parser import detectCardinalType,\
 nlp = spacy.load("en_core_web_sm")
 
 def test_IsLiveEvent():
+    count = 0
     for [string, _ , _] in teststringdict.values():
+        print("count -> ",count)
         IsLiveEvent(string)
+        count += 1
+    
 
 def test_scoreNamedEntities():
     for [string, _ , _] in teststringdict.values():

@@ -1,5 +1,28 @@
 <h3 align="center">Parser</h3>
 
+### Parser Output with `Normal Post` and `Live Post`
+
+```
+POST
+----------------------------------------------------------------------------------
+A clip from our @thattu.pattu live performance video
+
+ You can watch the full video on the Thattu Pattu Website - the link is in our bio!
+ .
+ .
+ .
+ #alternativemusic
+ #singersongwriter #livemusic #indiepop #singer #songwriter #smusic #art #experimentalmusic #performancevideo #alternativestyle #owltreeo #owlsessions #thattupattu
+-----------------------------------------------------------------------------------
+-->Not Detected As Live Event<--
+
+Hash Tag Score: (1, 14)
+Common Word Score: (0, 10)
+NER Score: (0, 1)
+---------------------------------
+```
+
+
 ### Table Of Content
 
 - `scrapeddata/*`: scraped data
@@ -8,6 +31,12 @@
 This document explains how exactly the parser works. After a post is scraped we need to identify whether the given post has a "possibility" of being a **post about a live-event**. 
 
 We will be scoring the posts according to several key points and we will be using [`spacy`](https://spacy.io/). 
+
+---
+
+The detection part of the algorithm is very *hacky*. It just look at only certain keywords. Since I am doing it in a rush I am not going to implement this properly maybe in the future I will :pray:
+
+The section below gives a small description on how the *detection* algorithm works.
 
 ---
 
@@ -75,10 +104,6 @@ There are several possible methods the post will mention dates:
 
 Majority of the time `ents` of `Date` get recognized as `DATE, CARDINAL`. To detect dates in the string we will look for the `left-span-entity` and `right-span-entity`. `regex` will be used to detect date versions like `mm/dd/yyyy`. 
 
-#### Identifying Time
-
-
-
 ---
 
 #### Identifying Location
@@ -96,6 +121,4 @@ USD
 $
 Rs
 ```
-
-
 ---
