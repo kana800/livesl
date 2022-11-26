@@ -21,7 +21,11 @@ MONTHSHRT = ['jan', 'feb', 'mar', 'apr', 'may', 'june', 'july',\
 WEEKLONG = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday',\
     'friday', 'saturday']
 WEEKSHRT = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat']
-METAJSON = {}
+METAJSON = {
+    'Dates': [],
+    'Curr':[],
+    'Location': []
+}
 
 #-----Utilities-------------------
 def IsInNouns(wrd):
@@ -95,7 +99,6 @@ def IsLiveEvent(description):
     return:
         True/False
     """
-    METAJSON = {}
     (htscore, htcnt) = scoreHashTags(description)
     # removing hashtags
     doc = nlp(removeHashTags(description))
@@ -103,9 +106,7 @@ def IsLiveEvent(description):
     (cwscore, cwwrdcnt) = scoreCommonWords(doc)
     (nerscore, nerdetect) = scoreNamedEntities(doc)
 
-    print("\n------------------------POST---------------------------\n")
-    print(description)
-    print("\n------------------------POST---------------------------\n")
+    print("\n------------------------RESULTS---------------------------\n")
 
     # if event is live post
     if ((nerscore >= 2) & (htscore >= 2) & (cwscore >= 1)):
@@ -120,7 +121,7 @@ def IsLiveEvent(description):
     print(f"Common Word Score: {cwscore, cwwrdcnt}")
     print(f"NER Score: {nerscore, nerdetect}")
 
-    print("---------------------------------\n")
+    print("-----------------------------------------------------------\n")
     return (state, METAJSON)
 
 #------------COMMON WORDS-------------------
@@ -245,7 +246,7 @@ def scoreNamedEntities(doc):
 
     # populating meta json
     METAJSON['Dates'] = detectedDates
-    METAJSON['Curre'] = detectedCurrency
+    METAJSON['Curr'] = detectedCurrency
 
     return (score, len(doc.ents))
 
