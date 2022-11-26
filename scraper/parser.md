@@ -3,8 +3,49 @@
 ### Parser Output with `Normal Post` and `Live Post`
 
 ```
-POST
-----------------------------------------------------------------------------------
+scraper\scrapeddata\thesoulsrilanka\latest.jpg [Well well well....look who's …] json
+
+------------------------POST---------------------------
+
+Well well well....look who's back old friend....@dotsbayhouse
+
+ 7 years of supporting original music and wishing them plenty more.
+
+ We're playing there again on the
+ 1st of December 2022.
+
+ THURSDAY! Come for the weekend!
+
+ Entry - LKR 2000
+
+ Tickets at the gatee!!!
+
+ Let the season and celebrations begin.
+
+ Hiri babe hear we come.
+
+ #thesoulsrilanka #dotsbayhouse #7thanniversary #livemusicvenue #originalmusic #supportoriginalmusic #srilanka #srilankatourism #tourism #matara #hiriketiya #dickwella #talalla #tangalle #weligama #madiha #boomlive
+
+
+------------------------POST---------------------------
+
+-->Detected As Live Event<--
+
+
+
+Hash Tag Score: (3, 16)
+Common Word Score: (3, 10)
+NER Score: (2, 5)
+---------------------------------
+
+live event ->  True
+---------------------------------
+
+
+[A clip from our @thattu.pattu…] json
+
+------------------------POST---------------------------
+
 A clip from our @thattu.pattu live performance video
 
  You can watch the full video on the Thattu Pattu Website - the link is in our bio!
@@ -13,13 +54,20 @@ A clip from our @thattu.pattu live performance video
  .
  #alternativemusic
  #singersongwriter #livemusic #indiepop #singer #songwriter #smusic #art #experimentalmusic #performancevideo #alternativestyle #owltreeo #owlsessions #thattupattu
------------------------------------------------------------------------------------
+
+
+------------------------POST---------------------------
+
 -->Not Detected As Live Event<--
+
+
 
 Hash Tag Score: (1, 14)
 Common Word Score: (0, 10)
 NER Score: (0, 1)
 ---------------------------------
+
+live event ->  False
 ```
 
 
