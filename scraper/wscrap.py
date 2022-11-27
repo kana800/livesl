@@ -10,7 +10,8 @@ DEFAULT_JSON_PATH = Path('scraper/meta.json')
 METAJSON = {
     'Dates': [],
     'Curr':[],
-    'Location': []
+    'Location': [],
+    'PostId': []
 }
 
 def loadBandList():
@@ -32,6 +33,7 @@ def downloadLatestPost(bandname):
         bandname -> string 
     return:
         True/False
+        shortid
     """
     temppath = DEFAULT_DATA_PATH/bandname
     posts = instaloader.Profile.from_username(
@@ -43,7 +45,7 @@ def downloadLatestPost(bandname):
         # latest post
         result = L.download_post(post, temppath)
         break
-    return result
+    return (result, post.shortcode)
 
 def grabContentDescription(bandname):
     """summary: grabs the content
@@ -69,8 +71,8 @@ def completeMetaDict(metadict):
         metadict
     """
     userinput = 1
-    print("Enter 'n' or 'q' to exit\n")
-    while (1):
+    print("---Enter 'n' or 'q' to quit the mode---\n")
+    while (userinput):
         # i can write this much better later; for now
         # we will catch it like this
         if ((userinput == 'n') | (userinput == 'q')):
@@ -98,24 +100,22 @@ def getUserConfirmation(metadict, metastate, livestate):
         (bool, metadict);
     """
     userinput = 1
+    print("---Enter 'n' or 'q' to quit the mode---\n")
     while (userinput):
+        userinput = input(f"Is this is a live event (Y->yes | N->no | Q->quit)?\n")
         if ((userinput == 'n') | (userinput == 'q')):
             break
-        # both live event is false and metadict is incomplete
-        if ((livestate == False) & (metastate == True)):
-            inputstr = "live state seemed to fail and the meta dictionary is incomplete"
-            userinput = input(f"{inputstr} Is this is a live event (Y->yes | N->no | Q->quit)?\n")
-            if (userinput == 'Y'):
+        if (userinput.lower() == 'y'):
+            # both live event is false and metadict is incomplete
+            if ((livestate == False) & (metastate == True)):
                 print("lets complete the meta dictionary; You need to input these values manually...\n")
                 metadict = completeMetaDict(metadict)
                 return (True, metadict)
-        elif (livestate == True & metastate == True):
-        # only the meta dict is incomplete
-            metadict = completeMetaDict(metadict)
-            return (True, metadict)
-        elif (livestate == False & metastate == False):
-            userinput = input(f"Is this is a live event (Y->yes | N->no | Q->quit)?\n")
-            if (userinput == 'Y'):
+            elif (livestate == True & metastate == True):
+            # only the meta dict is incomplete
+                metadict = completeMetaDict(metadict)
+                return (True, metadict)
+            elif (livestate == False & metastate == False):
                 return (True, metadict)
     return (False, metadict)
 
@@ -142,18 +142,19 @@ def generateFiles(metadict):
 
 if __name__ == "__main__":
     bandlist = loadBandList()
-    print()
     metajson = {}
     L = instaloader.Instaloader(
         download_videos=False,
         download_video_thumbnails=False,
         filename_pattern="latest")
     for (key, value) in bandlist.items():
-        ret = downloadLatestPost(key)
+        (ret,shortid) = downloadLatestPost(key)
         # True New Post is Downloaded
         # Process It and Regenerate Meta.json
         if (ret):
             desc = grabContentDescription(key)
+            print("--------------------------------------------------------------------\n")
+            print(desc)
             (liveEvent, MetaDict)= IsLiveEvent(desc)
             state = IsMetaDictEmpty(MetaDict)
             if (state | liveEvent):
@@ -161,8 +162,7 @@ if __name__ == "__main__":
                 metastate= state, livestate = liveEvent)
                 if (retuinf):
                     metajson[key] = MetaDict
-            print("live event -> ", liveEvent)
-            print("Meta Dict  -> ", MetaDict)
+                    metajson[key]["PostId"] = shortid
     # generate meta.json file
     print("Generating Meta File\n")
     generateFiles(metajson)

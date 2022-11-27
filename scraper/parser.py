@@ -121,7 +121,6 @@ def IsLiveEvent(description):
     print(f"Common Word Score: {cwscore, cwwrdcnt}")
     print(f"NER Score: {nerscore, nerdetect}")
 
-    print("-----------------------------------------------------------\n")
     return (state, METAJSON)
 
 #------------COMMON WORDS-------------------

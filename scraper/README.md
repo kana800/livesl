@@ -1,11 +1,11 @@
 <h3 align="center">Web-Scraper</h3>
 
-- [Summary](#summary)
+- [Scraping](#scraper)
 - [Bands, BandList](#band-list)
 - [Parser](#parser)
     - [Parser Output/Input](#parser-output-with-normal-post-and-live-post)
 
-### Summary
+### Scraper
 > Web-Scraper component heavily relies on the [`instaloader`](https://github.com/instaloader/instaloader). 
 
 **Instaloader** handles "scraping" all the content from the given `instagram_id`. The script will be only downloading the latest post of the listed *bands*.
