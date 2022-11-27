@@ -149,8 +149,7 @@ if __name__ == "__main__":
         download_video_thumbnails=False,
         filename_pattern="latest")
     for (key, value) in bandlist.items():
-#        ret = downloadLatestPost(key)
-        ret = 1
+        ret = downloadLatestPost(key)
         # True New Post is Downloaded
         # Process It and Regenerate Meta.json
         if (ret):
