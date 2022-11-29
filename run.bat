@@ -8,3 +8,4 @@ if "%VIRTUAL_ENV%"=="%VIRTUAL_ENV%" (%virtual_loc%)
 
 ::executing program
 python scraper\wscrap.py
+C:\DEV\livesl\out\build\x64-Debug\out\generator.exe
