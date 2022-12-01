@@ -1,14 +1,3 @@
-<h3 align="center">This Project is **Archived**</h3>
-
-### Why?
-
-- `Web-Scraping` in general is a bit of "grey-area"
-- The record label for majority of bands in the curated list `boom.sl` will make their own website. Plus Majority of their posts doesnt have relevant `description` which makes the `parser` obsolete.
-
-The website will be **live** but the date isnt upto date;
-
----
-
 <h3 align="center">Web-Scraper</h3>
 
 - [Scraping](#scraper)
